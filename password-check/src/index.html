@@ -16,22 +16,39 @@
               class="first-input-password"
               type="password"
               id="first-password"
+              data-cy="first-password"
             />
             <input
               class="second-input-password"
               type="password"
               id="second-password"
+              data-cy="second-password"
             />
-            <button class="btn" type="button">Show Passwords</button>
+            <button class="btn" type="button" data-cy="btn-show-passwords">
+              Show Passwords
+            </button>
           </form>
         </article>
         <article class="check">
-          <p>Passwords are equal <span class="check-equal">❌</span></p>
-          <p>Lower Case letters <span class="check-lower">❌</span></p>
-          <p>Upper Case Letters <span class="check-upper">❌</span></p>
-          <p>Contains Numbers <span class="check-number">❌</span></p>
           <p>
-            At least 10 characters long <span class="check-length">❌</span>
+            Passwords are equal
+            <span class="check-equal" data-cy="passwords-equal">❌</span>
+          </p>
+          <p>
+            Lower Case letters
+            <span class="check-lower" data-cy="lowercase-letters">❌</span>
+          </p>
+          <p>
+            Upper Case Letters
+            <span class="check-upper" data-cy="uppercase-letters">❌</span>
+          </p>
+          <p>
+            Contains Numbers
+            <span class="check-number" data-cy="contains-numbers">❌</span>
+          </p>
+          <p>
+            At least 10 characters long
+            <span class="check-length" data-cy="atleast-10-chars">❌</span>
           </p>
         </article>
       </section>
