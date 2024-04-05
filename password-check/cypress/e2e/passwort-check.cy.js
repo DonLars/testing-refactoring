@@ -71,8 +71,8 @@ describe("passwort checker", () => {
   });
 
   it("At least 10 characters long", () => {
-    const FirstTestPassword = "abcdefghijk";
-    const SecondTestPassword = "abcdefghijk";
+    const FirstTestPassword = "Abcdefghijk9";
+    const SecondTestPassword = "Abcdefghijk9";
 
     cy.get("[data-cy='first-password']")
       .type(FirstTestPassword)

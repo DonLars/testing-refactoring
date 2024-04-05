@@ -1,138 +1,120 @@
-console.log("Hello Todo App!");
+import {
+  readTodosFromLocalStorage,
+  saveTodosToLocalStorage,
+  isDuplicate,
+} from "./lib.js";
 
-let todos = [];
-const deleteTodosButton = document.querySelector("#delete-todos");
-const addTodoBtn = document.querySelector("#add-todo");
-const todoListEl = document.querySelector("#todo-list");
+document.addEventListener("DOMContentLoaded", function () {
+  let todos = readTodosFromLocalStorage();
 
-function readTodosFromLocalStorage() {
-  const todosFromStorage = localStorage.getItem("todos");
-  if (todosFromStorage !== null) {
-    todos = JSON.parse(todosFromStorage);
-  }
-}
-
-function saveTodosToLocalStorage() {
-  localStorage.setItem("todos", JSON.stringify(todos));
-}
-
-function addNewTodo() {
-  const newTodoEl = document.querySelector("#new-todo");
-  const newTodoText = newTodoEl.value.trim();
-
-  // length check
-  if (newTodoText.length === 0) {
-    return;
-  }
-
-  // duplicate check
-  if (isDuplicate(newTodoText)) {
-    return;
-  }
-
-  const newTodo = {
-    todo: newTodoText,
-    done: false,
-  };
-  todos.push(newTodo);
-
-  renderTodos();
-  saveTodosToLocalStorage();
-
-  newTodoEl.value = "";
-}
-addTodoBtn.addEventListener("click", addNewTodo);
-
-function renderTodos() {
+  const deleteTodosButton = document.querySelector("#delete-todos");
+  const addTodoBtn = document.querySelector("#add-todo");
   const todoListEl = document.querySelector("#todo-list");
-  todoListEl.innerHTML = "";
 
-  todos.forEach(function (currentTodo) {
-    const newTodoLiEl = document.createElement("li");
-
-    const todoCheckboxEl = document.createElement("input");
-    todoCheckboxEl.setAttribute("type", "checkbox");
-    todoCheckboxEl.checked = currentTodo.done;
-    newTodoLiEl.appendChild(todoCheckboxEl);
-
-    const textNode = document.createTextNode(currentTodo.todo);
-    newTodoLiEl.append(textNode);
-
-    if (currentTodo.done === true) {
-      newTodoLiEl.classList.add("done");
-    }
-
-    newTodoLiEl.todo = currentTodo;
-
-    const filterValue = getFilterValue();
-    if (filterValue === "done") {
-      newTodoLiEl.hidden = true;
-    }
-
-    todoListEl.appendChild(newTodoLiEl);
+  addTodoBtn.addEventListener("click", function () {
+    addNewTodo();
   });
 
-  filterTodos();
-}
+  function addNewTodo() {
+    const newTodoEl = document.querySelector("#new-todo");
+    const newTodoText = newTodoEl.value.trim();
 
-function isDuplicate(todo) {
-  todo = todo.toLowerCase();
-
-  for (let i = 0; i < todos.length; i++) {
-    const currentTodo = todos[i];
-    if (currentTodo.todo.toLowerCase() === todo) {
-      return true;
+    if (newTodoText.length === 0 || isDuplicate(todos, newTodoText)) {
+      return;
     }
-  }
-  return false;
-}
 
-todoListEl.addEventListener("change", toggleTodoState);
-function toggleTodoState(event) {
-  const checkbox = event.target;
-  if (checkbox.checked === true) {
-    checkbox.parentElement.classList.add("done");
-    checkbox.parentElement.todo.done = true;
-  } else {
-    checkbox.parentElement.classList.remove("done");
-    checkbox.parentElement.todo.done = false;
+    const newTodo = {
+      todo: newTodoText,
+      done: false,
+    };
+    todos.push(newTodo);
+
+    renderTodos();
+    saveTodosToLocalStorage(todos);
+
+    newTodoEl.value = "";
   }
 
-  saveTodosToLocalStorage();
-}
+  function renderTodos() {
+    todoListEl.innerHTML = "";
 
-const todoFilterEl = document.querySelector("#todo-filter");
-todoFilterEl.addEventListener("change", filterTodos);
-function filterTodos() {
-  const filterValue = getFilterValue();
+    todos.forEach(function (currentTodo) {
+      const newTodoLiEl = document.createElement("li");
 
-  const todoListEl = document.querySelector("#todo-list");
-  for (let i = 0; i < todoListEl.children.length; i++) {
-    const currentTodo = todoListEl.children[i];
-    if (filterValue === "all") {
-      currentTodo.hidden = false;
-    } else if (filterValue === "open") {
-      currentTodo.hidden = currentTodo.todo.done;
-    } else if (filterValue === "done") {
-      currentTodo.hidden = !currentTodo.todo.done;
+      const todoCheckboxEl = document.createElement("input");
+      todoCheckboxEl.setAttribute("type", "checkbox");
+      todoCheckboxEl.checked = currentTodo.done;
+      newTodoLiEl.appendChild(todoCheckboxEl);
+
+      const textNode = document.createTextNode(currentTodo.todo);
+      newTodoLiEl.append(textNode);
+
+      if (currentTodo.done === true) {
+        newTodoLiEl.classList.add("done");
+      }
+
+      newTodoLiEl.todo = currentTodo;
+
+      todoListEl.appendChild(newTodoLiEl);
+    });
+
+    filterTodos();
+  }
+
+  todoListEl.addEventListener("change", function (event) {
+    toggleTodoState(event);
+  });
+
+  function toggleTodoState(event) {
+    const checkbox = event.target;
+    if (checkbox.checked === true) {
+      checkbox.parentElement.classList.add("done");
+      checkbox.parentElement.todo.done = true;
+    } else {
+      checkbox.parentElement.classList.remove("done");
+      checkbox.parentElement.todo.done = false;
     }
+
+    saveTodosToLocalStorage(todos);
   }
-}
 
-function getFilterValue() {
-  return document.querySelector('#todo-filter input[type="radio"]:checked')
-    .value;
-}
+  const todoFilterEl = document.querySelector("#todo-filter");
+  todoFilterEl.addEventListener("change", function () {
+    filterTodos();
+  });
 
-function deleteDoneTodos() {
-  todos = todos.filter((todo) => todo.done === false);
-  saveTodosToLocalStorage();
+  function filterTodos() {
+    const filterValue = getFilterValue();
+
+    todos.forEach((todo) => {
+      const currentTodoEl = todoListEl.querySelector(`[data-id="${todo.id}"]`);
+      if (!currentTodoEl) return;
+
+      if (
+        filterValue === "all" ||
+        (filterValue === "open" && !todo.done) ||
+        (filterValue === "done" && todo.done)
+      ) {
+        currentTodoEl.style.display = "block";
+      } else {
+        currentTodoEl.style.display = "none";
+      }
+    });
+  }
+
+  function getFilterValue() {
+    return document.querySelector('input[name="todo-filter"]:checked').value;
+  }
+
+  deleteTodosButton.addEventListener("click", function () {
+    deleteDoneTodos();
+  });
+
+  function deleteDoneTodos() {
+    todos = todos.filter((todo) => !todo.done);
+    saveTodosToLocalStorage(todos);
+    renderTodos();
+  }
+
   renderTodos();
-}
-deleteTodosButton.addEventListener("click", deleteDoneTodos);
-
-function initTodoApp() {
-  readTodosFromLocalStorage();
-  renderTodos();
-}
-initTodoApp();
+});

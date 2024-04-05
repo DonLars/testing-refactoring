@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Minimal todo app example.",
   "scripts": {
-    "serve": "serve ./src",
-    "e2e": "cypress open"
+    "serve": "serve ./src -l 51480",
+    "e2e": "cypress open",
+    "test": "npm run serve && cypress open"
   },
   "keywords": [],
   "author": "",

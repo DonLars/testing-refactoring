@@ -1,6 +1,10 @@
-"use strict";
+import {
+  checkUppercase,
+  checkLowercase,
+  checkNumber,
+  checkLength,
+} from "./lib.js";
 
-const form = document.querySelector("#form");
 const firstInputPassword = document.querySelector(".first-input-password");
 const secondInputPassword = document.querySelector(".second-input-password");
 const button = document.querySelector("button");
@@ -41,7 +45,7 @@ function equalCheck() {
   } else {
     checkSpanEqual.innerText = "✅";
 
-    if (checklowercase(firstInputPassword.value)) {
+    if (checkLowercase(firstInputPassword.value)) {
       checkSpanLower.innerText = "✅";
     }
     if (checkUppercase(firstInputPassword.value)) {
@@ -53,26 +57,5 @@ function equalCheck() {
     if (checkLength(firstInputPassword.value)) {
       checkSpanLength.innerText = "✅";
     }
-  }
-}
-
-/*    FUNCTIONS - for further tests
-========================================================================== */
-
-function checkUppercase(string) {
-  return /[A-Z]/.test(string);
-}
-
-function checklowercase(string) {
-  return /[a-z]/.test(string);
-}
-
-function checkNumber(string) {
-  return /[0-9]/.test(string);
-}
-
-function checkLength(string) {
-  if (string.length >= 10) {
-    return true;
   }
 }
