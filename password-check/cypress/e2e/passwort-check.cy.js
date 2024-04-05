@@ -51,7 +51,7 @@ describe("passwort checker", () => {
       });
   });
 
-  it.only("Passwords contains a number", () => {
+  it("Passwords contains a number", () => {
     const numberPasswort1 = "5";
     const numberPasswort2 = "abc15";
 
